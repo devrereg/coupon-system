@@ -1,0 +1,40 @@
+# Day 1 로컬 인프라: PostgreSQL + Redis
+# 기동:  docker compose up -d
+# 상태:  docker compose ps        (healthy 확인)
+# 종료:  docker compose down      (데이터 유지)
+#        docker compose down -v   (볼륨까지 삭제)
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: coupon-postgres
+    environment:
+      POSTGRES_DB: coupon
+      POSTGRES_USER: coupon
+      POSTGRES_PASSWORD: coupon
+    ports:
+      # 호스트 5432/5433이 점유되어 있어 15432로 매핑한다. (컨테이너 내부는 5432)
+      - "15432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U coupon -d coupon"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    container_name: coupon-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  postgres-data:
+  redis-data:

@@ -1,0 +1,25 @@
+/*
+ * 전역 베이스. 색/타이포는 tokens.css 의 CSS 변수만 사용한다.
+ * 토큰 정의는 main.tsx 가 tokens.css 를 먼저 import 한다.
+ */
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: var(--color-canvas);
+  color: var(--color-ink);
+  font: var(--text-body-md);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#root {
+  min-height: 100vh;
+}

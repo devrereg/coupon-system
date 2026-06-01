@@ -1,0 +1,27 @@
+/* 잔여 칩 — 999px pill, body-sm-strong. 색이 아니라 흑백/그레이 + 폴라리티 플립으로만 의미 전달. */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  border-radius: var(--rounded-pill);
+  font: var(--text-body-sm-strong);
+  padding: var(--space-xs) var(--space-md);
+  white-space: nowrap;
+}
+
+/* normal: 충분한 잔여. canvas-soft 배경 / ink 글자. */
+.normal {
+  background: var(--color-canvas-soft);
+  color: var(--color-ink);
+}
+
+/* low: 잔여 임박(≤10%). 검정 폴라리티 플립 — ink 배경 / on-dark 글자. */
+.low {
+  background: var(--color-ink);
+  color: var(--color-on-dark);
+}
+
+/* sold-out: 품절. canvas-soft 배경 / mute 글자. */
+.soldOut {
+  background: var(--color-canvas-soft);
+  color: var(--color-mute);
+}

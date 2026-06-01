@@ -1,0 +1,47 @@
+spring:
+  application:
+    name: coupon-system
+
+  # Day 1 핵심: Java 21 가상 스레드 활성화
+  # 톰캣 요청 처리 스레드를 플랫폼 스레드 풀 대신 가상 스레드로 전환한다.
+  threads:
+    virtual:
+      enabled: true
+
+  datasource:
+    url: jdbc:postgresql://localhost:15432/coupon
+    username: coupon
+    password: coupon
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      # 스키마는 Flyway 마이그레이션이 소유한다. Hibernate는 엔티티-스키마 일치만 검증.
+      ddl-auto: validate
+    properties:
+      hibernate:
+        format_sql: true
+    open-in-view: false
+
+  # Flyway: classpath:db/migration 의 V*.sql 을 부팅 시 적용. datasource 를 그대로 사용.
+  flyway:
+    enabled: true
+
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
+# Actuator: Day 1에서는 health/info/metrics 확인용.
+# prometheus 엔드포인트는 4주차 모니터링에서 본격적으로 사용한다.
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info, metrics, prometheus
+  endpoint:
+    health:
+      show-details: always
+  info:
+    java:
+      enabled: true

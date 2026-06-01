@@ -1,0 +1,21 @@
+/* card-content 기반 — canvas, rounded-xl, padding 2xl, shadow 없음. */
+.panel {
+  background: var(--color-canvas);
+  border-radius: var(--rounded-xl);
+  padding: var(--space-2xl);
+  display: flex;
+  flex-direction: column;
+}
+
+/* CouponCard → (xl) UserSelect → (xl) Button → (lg) ResultMessage. */
+.userSelect {
+  margin-top: var(--space-xl);
+}
+
+.action {
+  margin-top: var(--space-xl);
+}
+
+.result {
+  margin-top: var(--space-lg);
+}

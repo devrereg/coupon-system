@@ -1,0 +1,20 @@
+/* 발급 결과 메시지. 별도 error/success 색 없음 — 흑백/그레이 + 폴라리티 플립으로만. */
+.message {
+  border-radius: var(--rounded-md);
+  padding: var(--space-md) var(--space-lg);
+  font: var(--text-body-md);
+  text-align: center;
+}
+
+/* success: 검정 밴드(폴라리티 플립) — ink 배경 / on-dark 글자. */
+.success {
+  background: var(--color-ink);
+  color: var(--color-on-dark);
+  font: var(--text-body-md-strong);
+}
+
+/* soldout / duplicate / error: canvas-soft 표면 + ink 문구. 의미는 문구가 나른다. */
+.neutral {
+  background: var(--color-canvas-soft);
+  color: var(--color-ink);
+}

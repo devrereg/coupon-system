@@ -1,0 +1,46 @@
+/* card-soft-tinted 기반 — canvas-soft, rounded-xl, padding 2xl, shadow 없음. */
+.card {
+  background: var(--color-canvas-soft);
+  border-radius: var(--rounded-xl);
+  padding: var(--space-2xl);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+.name {
+  font: var(--text-display-sm);
+  color: var(--color-ink);
+  margin: 0;
+}
+
+/* 로딩/빈 상태의 쿠폰명 자리 — mute 1줄. */
+.muted {
+  font: var(--text-display-sm);
+  color: var(--color-mute);
+  margin: 0;
+}
+
+/* 잔여 행: 숫자 강조 + 총량 mute 좌측, Badge 우측. */
+.remainingRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+}
+
+.quantity {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-xxs);
+}
+
+.remaining {
+  font: var(--text-display-md);
+  color: var(--color-ink);
+}
+
+.total {
+  font: var(--text-body-md);
+  color: var(--color-mute);
+}

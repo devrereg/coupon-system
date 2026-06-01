@@ -1,0 +1,40 @@
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.label {
+  font: var(--text-body-sm-strong);
+  color: var(--color-ink);
+}
+
+/* native select — canvas-soft 배경, rounded-md, padding lg. */
+.select {
+  width: 100%;
+  box-sizing: border-box;
+  background: var(--color-canvas-soft);
+  color: var(--color-ink);
+  font: var(--text-body-md);
+  border: 2px solid transparent;
+  border-radius: var(--rounded-md);
+  padding: var(--space-lg);
+  cursor: pointer;
+  appearance: none;
+}
+
+/* focus outline 2px solid ink. */
+.select:focus-visible {
+  outline: none;
+  border-color: var(--color-ink);
+}
+
+.select:disabled {
+  cursor: default;
+  color: var(--color-mute);
+}
+
+/* placeholder(미선택) 옵션은 mute. */
+.placeholder {
+  color: var(--color-mute);
+}

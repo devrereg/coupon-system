@@ -1,0 +1,63 @@
+/*
+ * Design tokens — DESIGN.md (Uber design analysis) 기반 CSS 커스텀 프로퍼티.
+ * 단일 진실 공급원은 apps/web/DESIGN.md. 토큰이 바뀌면 이 파일을 함께 갱신한다.
+ * 사용 예: color: var(--color-ink); border-radius: var(--rounded-pill);
+ */
+:root {
+  /* colors */
+  --color-primary: #000000;
+  --color-on-primary: #ffffff;
+  --color-ink: #000000;
+  --color-body: #5e5e5e;
+  --color-mute: #afafaf;
+  --color-hairline-mid: #4b4b4b;
+  --color-canvas: #ffffff;
+  --color-canvas-soft: #efefef;
+  --color-canvas-softer: #f3f3f3;
+  --color-surface-pressed: #e2e2e2;
+  --color-link: #0000ee;
+  --color-on-dark: #ffffff;
+  --color-black-elevated: #282828;
+
+  /* typography — 두 페이스: 디스플레이(700) / 텍스트(400·500). 대체 폰트: Inter */
+  --font-display: "UberMove", "Inter", system-ui, "Helvetica Neue", Arial, sans-serif;
+  --font-text: "UberMoveText", "Inter", system-ui, "Helvetica Neue", Arial, sans-serif;
+
+  --text-display-xxl: 700 52px/64px var(--font-display);
+  --text-display-xl: 700 36px/44px var(--font-display);
+  --text-display-lg: 700 32px/40px var(--font-display);
+  --text-display-md: 700 24px/32px var(--font-display);
+  --text-display-sm: 700 20px/28px var(--font-display);
+  --text-body-lg: 500 18px/24px var(--font-text);
+  --text-body-md: 400 16px/24px var(--font-text);
+  --text-body-md-strong: 500 16px/20px var(--font-text);
+  --text-body-sm: 400 14px/20px var(--font-text);
+  --text-body-sm-strong: 500 14px/16px var(--font-text);
+  --text-caption: 400 12px/20px var(--font-text);
+  --text-button-large: 500 18px/24px var(--font-text);
+  --text-button-md: 500 16px/20px var(--font-text);
+
+  /* radius */
+  --rounded-none: 0px;
+  --rounded-md: 8px;
+  --rounded-lg: 12px;
+  --rounded-xl: 16px;
+  --rounded-pill: 999px;
+  --rounded-pill-tab: 36px;
+  --rounded-full: 9999px;
+
+  /* spacing — base 4px */
+  --space-xxs: 4px;
+  --space-xs: 6px;
+  --space-sm: 8px;
+  --space-md: 12px;
+  --space-lg: 16px;
+  --space-xl: 20px;
+  --space-2xl: 24px;
+  --space-3xl: 32px;
+
+  /* elevation */
+  --shadow-1: rgba(0, 0, 0, 0.12) 0px 4px 16px 0px;
+  --shadow-2: rgba(0, 0, 0, 0.16) 0px 4px 16px 0px;
+  --shadow-3: rgba(0, 0, 0, 0.16) 0px 2px 8px 0px;
+}
