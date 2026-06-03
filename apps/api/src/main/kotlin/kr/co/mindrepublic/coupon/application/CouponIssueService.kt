@@ -16,7 +16,7 @@ import org.springframework.transaction.annotation.Transactional
  * 동시성 제어(Day 4): 재고 조회를 findByCouponIdForUpdate(SELECT … FOR UPDATE)로 수행한다.
  * 같은 재고 row 에 대한 동시 트랜잭션은 쓰기 락을 두고 줄을 서므로 (조회→차감)이 직렬화되어
  * lost update 가 발생하지 않는다. 락은 트랜잭션 커밋 시 해제된다.
- * 단일 row + 일관된 잠금 대상이라 데드락은 없고, 비관 락이라 재시도 로직도 불필요하다.
+ * 이 경로는 단일 row 만 잠그므로 데드락이 없고, 비관 락이라 재시도 로직도 불필요하다.
  */
 @Service
 class CouponIssueService(

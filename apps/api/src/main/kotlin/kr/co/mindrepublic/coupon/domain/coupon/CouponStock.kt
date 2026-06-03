@@ -38,9 +38,8 @@ class CouponStock(
     /**
      * 재고 1개 차감. 잔여가 0이면 OutOfStockException.
      *
-     * NOTE(Day 3): 이 메서드 자체는 단일 스레드에서 정확하다. 하지만 서비스가 락 없이
-     * (조회→확인→차감)을 수행하면, 동시에 여러 트랜잭션이 같은 remainingQuantity 값을
-     * 읽고 각자 차감해 lost update 가 발생한다. 그 깨짐을 Day 3 동시성 테스트로 재현한다.
+     * NOTE: 이 메서드의 0 미만 금지 불변식은 단일 스레드 기준이다. 동시 발급의 정확성은
+     * 서비스가 재고를 비관 락(SELECT … FOR UPDATE)으로 조회해 (조회→차감)을 직렬화함으로써 보장한다.
      */
     fun decrease() {
         if (remainingQuantity <= 0) {

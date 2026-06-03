@@ -50,18 +50,6 @@ allOpen {
 	annotation("jakarta.persistence.Embeddable")
 }
 
-tasks.test {
-	// 기본 빌드에서는 동시성 테스트(@Tag("concurrency"))를 제외한다.
-	// 의도적으로 red 상태인 Day 3 깨짐 재현 테스트가 build 를 깨지 않게 하기 위함.
-	useJUnitPlatform {
-		excludeTags("concurrency")
-	}
-}
-
-// 동시성 깨짐 재현 테스트만 온디맨드로 실행: ./gradlew concurrencyTest
-tasks.register<Test>("concurrencyTest") {
-	useJUnitPlatform {
-		includeTags("concurrency")
-	}
-	shouldRunAfter(tasks.test)
+tasks.withType<Test> {
+	useJUnitPlatform()
 }

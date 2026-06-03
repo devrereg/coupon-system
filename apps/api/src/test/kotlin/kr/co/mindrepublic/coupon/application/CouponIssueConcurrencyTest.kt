@@ -11,7 +11,6 @@ import kr.co.mindrepublic.coupon.infrastructure.persistence.UserJpaRepository
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
@@ -23,22 +22,19 @@ import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicInteger
 
 /**
- * Day 3 — 락 없는 발급의 동시성 깨짐 재현 (의도적으로 RED).
+ * Day 4 — 비관 락이 동시 발급을 직렬화함을 검증하는 회귀 테스트.
  *
- * 재고 100개에 서로 다른 2,000명이 가상 스레드로 동시에 발급을 요청한다.
- * 락이 없으면 (조회 → 확인 → 차감) 사이의 경쟁으로 lost update 가 발생해
- * 성공 발급 수가 100을 초과한다. 아래 단언은 "올바른 불변식"이라
- * 지금은 FAIL 하는 것이 정상이며, Day 4에서 락을 넣으면 GREEN 이 되는 회귀 테스트다.
+ * 재고 100개에 서로 다른 2,000명이 가상 스레드로 동시에 발급을 요청해도,
+ * issue() 가 재고를 SELECT … FOR UPDATE 로 조회해 (조회→차감)을 직렬화하므로
+ * 정확히 100개만 발급된다. (Day 3 에서는 락이 없어 이 단언이 FAIL 했다.)
  *
  * @DataJpaTest 를 쓰지 않는 이유: @DataJpaTest 는 테스트를 트랜잭션으로 감싸 롤백하므로
- * 스레드별 독립 커밋이 일어나지 않아 lost update 가 재현되지 않는다.
- * @SpringBootTest 는 테스트 메서드를 트랜잭션으로 감싸지 않아, 각 스레드의 service.issue()
- * 트랜잭션이 독립적으로 커밋된다 → 그래서 정리도 @AfterEach 에서 직접 해야 한다.
+ * 스레드별 독립 커밋이 일어나지 않는다. @SpringBootTest 는 테스트 메서드를 트랜잭션으로
+ * 감싸지 않아 각 스레드의 issue() 트랜잭션이 독립적으로 커밋된다 → 정리도 @AfterEach 에서 직접 한다.
  *
  * NOTE: 전체 컨텍스트를 로드하므로 PostgreSQL/Redis 가 떠 있어야 한다(docker compose up -d).
  */
 @SpringBootTest
-@Tag("concurrency")
 class CouponIssueConcurrencyTest @Autowired constructor(
     private val service: CouponIssueService,
     private val couponStockRepository: CouponStockRepository,
@@ -59,7 +55,7 @@ class CouponIssueConcurrencyTest @Autowired constructor(
         // 재고 100개짜리 선착순 쿠폰
         val coupon = couponJpaRepository.save(
             Coupon(
-                name = "Day3 동시성 쿠폰",
+                name = "Day4 동시성 쿠폰",
                 totalQuantity = TOTAL_QUANTITY,
                 issueStartAt = LocalDateTime.now().minusHours(1),
                 issueEndAt = LocalDateTime.now().plusDays(1),
@@ -85,7 +81,7 @@ class CouponIssueConcurrencyTest @Autowired constructor(
     }
 
     @Test
-    fun `재고 100개에 2000명이 동시 발급하면 락이 없어 100을 초과 발급한다 (의도적 red)`() {
+    fun `재고 100개에 2000명이 동시 발급해도 비관 락으로 정확히 100개만 발급된다`() {
         val success = AtomicInteger(0)
         val fail = AtomicInteger(0)
 
@@ -128,7 +124,7 @@ class CouponIssueConcurrencyTest @Autowired constructor(
             successCount, fail.get(), remaining, issued,
         )
 
-        // 올바른 불변식(지금은 락이 없어 깨진다 → FAIL 이 정상)
+        // 비관 락이 동시 차감을 직렬화하므로 불변식이 성립한다.
         assertThat(successCount).isEqualTo(TOTAL_QUANTITY)
         assertThat(remaining).isEqualTo(0)
         assertThat(issued).isEqualTo(TOTAL_QUANTITY.toLong())
