@@ -50,6 +50,17 @@ class CouponRepositoryDataJpaTest @Autowired constructor(
     }
 
     @Test
+    fun `couponId 로 재고를 비관 락으로 조회한다`() {
+        val coupon = couponRepository.save(newCoupon())
+        couponStockRepository.save(CouponStock(coupon = coupon, remainingQuantity = 100))
+
+        val found = couponStockRepository.findByCouponIdForUpdate(coupon.id!!)
+
+        assertThat(found).isNotNull
+        assertThat(found!!.remainingQuantity).isEqualTo(100)
+    }
+
+    @Test
     fun `발급 이력 저장 후 중복 발급 여부를 조회한다`() {
         val coupon = couponRepository.save(newCoupon())
         val user = userRepository.save(User(name = "홍길동"))

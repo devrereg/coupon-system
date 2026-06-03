@@ -10,4 +10,6 @@ class CouponStockRepositoryAdapter(
 ) : CouponStockRepository {
     override fun save(stock: CouponStock): CouponStock = jpa.save(stock)
     override fun findByCouponId(couponId: Long): CouponStock? = jpa.findByCouponId(couponId)
+    override fun findByCouponIdForUpdate(couponId: Long): CouponStock? =
+        jpa.findByCouponIdForUpdate(couponId)
 }
