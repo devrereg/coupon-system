@@ -116,7 +116,7 @@ class CouponIssueConcurrencyTest @Autowired constructor(
 
         val successCount = success.get()
         val remaining = couponStockRepository.findByCouponId(couponId)!!.remainingQuantity
-        val issued = couponIssueJpaRepository.count()
+        val issued = couponIssueJpaRepository.countByCouponId(couponId)
 
         // 단언 직전 관찰 로그: 깨짐 크기가 보이도록 성공/실패/잔여/발급행을 함께 출력
         log.warn(
