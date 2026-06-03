@@ -8,17 +8,15 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 /**
- * 쿠폰 발급 유스케이스 — "락 없는 순진한 버전".
+ * 쿠폰 발급 유스케이스 — 비관 락 버전.
  *
- * 흐름: (사용자/중복 확인) → 재고 조회 → 잔여 확인·차감 → 발급 이력 저장.
+ * 흐름: (사용자/중복 확인) → 재고를 비관 락으로 조회 → 잔여 확인·차감 → 발급 이력 저장.
  * 트랜잭션 경계는 이 서비스 메서드(@Transactional)에서 시작·종료한다.
  *
- * !!! Day 3 동시성 경고 !!!
- * 아래 흐름에는 어떠한 동시성 제어(비관/낙관 락, 원자적 UPDATE, 분산 락)도 없다.
- * 여러 트랜잭션이 동시에 같은 stock.remainingQuantity 를 읽고 각자 decrease() 하면
- * lost update 가 발생해, 재고 100개에 2,000명이 몰리면 발급 수가 100을 초과할 수 있다.
- * 이 "깨짐"을 Day 3 동시성 테스트로 재현한 뒤, 이후 단계에서 락으로 고친다.
- * (의도적으로 제어를 넣지 않은 지점이다 — 제거하거나 락을 추가하지 말 것)
+ * 동시성 제어(Day 4): 재고 조회를 findByCouponIdForUpdate(SELECT … FOR UPDATE)로 수행한다.
+ * 같은 재고 row 에 대한 동시 트랜잭션은 쓰기 락을 두고 줄을 서므로 (조회→차감)이 직렬화되어
+ * lost update 가 발생하지 않는다. 락은 트랜잭션 커밋 시 해제된다.
+ * 단일 row + 일관된 잠금 대상이라 데드락은 없고, 비관 락이라 재시도 로직도 불필요하다.
  */
 @Service
 class CouponIssueService(
@@ -37,11 +35,10 @@ class CouponIssueService(
             throw DuplicateIssueException(couponId, userId)
         }
 
-        // 재고 조회 (쿠폰당 1행)
-        val stock = couponStockRepository.findByCouponId(couponId)
+        // 재고 조회 (쿠폰당 1행) — 비관 락으로 동시 차감을 직렬화
+        val stock = couponStockRepository.findByCouponIdForUpdate(couponId)
             ?: throw CouponNotFoundException(couponId)
 
-        // <-- Day 3: 여기서 (읽은 재고 값 기준으로) 락 없이 차감한다. 동시 요청 시 lost update.
         stock.decrease()
 
         // 발급 이력 저장
