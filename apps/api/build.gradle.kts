@@ -35,6 +35,8 @@ dependencies {
 	runtimeOnly("io.micrometer:micrometer-registry-prometheus")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
+	// Kotlin 친화 Mockito DSL — final 클래스 목/스텁(재시도 루프 단위 테스트). mockito-core 는 starter-test 에 포함.
+	testImplementation("org.mockito.kotlin:mockito-kotlin:5.4.0")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
