@@ -9,6 +9,7 @@ import jakarta.persistence.Id
 import jakarta.persistence.JoinColumn
 import jakarta.persistence.OneToOne
 import jakarta.persistence.Table
+import jakarta.persistence.Version
 
 /**
  * 쿠폰 재고: 쿠폰당 1행으로 잔여 수량을 추적한다.
@@ -31,6 +32,14 @@ class CouponStock(
     @Column(name = "id")
     val id: Long? = null,
 ) {
+    /**
+     * 낙관 락(@Version)용 버전. 동시 갱신 충돌 시 OptimisticLockException 으로 드러난다.
+     * 생성자로 노출하지 않고 0 으로 시작하며, 갱신마다 Hibernate 가 증가시킨다.
+     */
+    @Version
+    @Column(name = "version", nullable = false)
+    var version: Long = 0
+
     init {
         require(remainingQuantity >= 0) { "잔여 수량은 0 이상이어야 한다: $remainingQuantity" }
     }
