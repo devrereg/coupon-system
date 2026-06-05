@@ -29,12 +29,16 @@ class RedisStockReservation(
         return remaining != null && remaining >= 0
     }
 
+    /**
+     * 예약했던 슬롯을 되돌린다(보상). INCR 이므로 **선행 reserve 성공과 짝**일 때만 호출해야 한다 —
+     * reserve 없이 부르면 카운터가 시드 수량을 넘어 초과 발급을 허용할 수 있다.
+     */
     override fun release(couponId: Long) {
         redisTemplate.opsForValue().increment(key(couponId))
     }
 
     override fun remaining(couponId: Long): Long =
-        redisTemplate.opsForValue().get(key(couponId))?.toLong() ?: 0
+        redisTemplate.opsForValue().get(key(couponId))?.toLongOrNull() ?: 0
 
     private fun key(couponId: Long) = "coupon:stock:$couponId"
 }
