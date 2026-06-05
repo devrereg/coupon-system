@@ -61,4 +61,24 @@ class RedisCouponIssueServiceTest {
         assertThat(result).isSameAs(expected)
         verify(reservation, never()).release(any())
     }
+
+    @Test
+    fun `보상(release)이 실패해도 원래 영속 예외를 잃지 않고 전파하며 release 오류는 suppressed 로 붙는다`() {
+        val persistError = DuplicateIssueException(couponId, userId)
+        val releaseError = RuntimeException("redis down")
+        val reservation = mock<StockReservation> {
+            on { reserve(couponId) } doReturn true
+            on { release(couponId) } doThrow releaseError
+        }
+        val persist = mock<RedisCouponIssuePersist> {
+            on { persist(couponId, userId) } doThrow persistError
+        }
+        val service = RedisCouponIssueService(reservation, persist)
+
+        assertThatThrownBy { service.issue(couponId, userId) }
+            .isSameAs(persistError)
+            .satisfies({ thrown -> assertThat(thrown.suppressed).contains(releaseError) })
+
+        verify(reservation, times(1)).release(couponId)
+    }
 }

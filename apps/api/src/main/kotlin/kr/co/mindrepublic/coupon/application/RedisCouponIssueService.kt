@@ -33,7 +33,13 @@ class RedisCouponIssueService(
             return persist.persist(couponId, userId)
         } catch (e: Exception) {
             // 게이트는 통과했으나 DB 영속 실패 → 슬롯 반납(보상) 후 재전파.
-            reservation.release(couponId)
+            // release 자체가 실패해도(예: Redis 장애) 원래 영속 예외를 잃지 않도록 suppressed 로 붙인다.
+            // (release 실패 시 슬롯 누수는 Redis 장애 한정 — 재시도/아웃박스는 범위 밖.)
+            try {
+                reservation.release(couponId)
+            } catch (releaseError: Exception) {
+                e.addSuppressed(releaseError)
+            }
             throw e
         }
     }
