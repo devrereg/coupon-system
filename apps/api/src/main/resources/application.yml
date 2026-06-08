@@ -32,6 +32,22 @@ spring:
       host: localhost
       port: 6379
 
+  kafka:
+    bootstrap-servers: localhost:9092
+    producer:
+      acks: all
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+    consumer:
+      group-id: coupon-issue-consumer
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: "kr.co.mindrepublic.coupon.domain.issue"
+    listener:
+      ack-mode: MANUAL
+
 # Actuator: Day 1에서는 health/info/metrics 확인용.
 # prometheus 엔드포인트는 4주차 모니터링에서 본격적으로 사용한다.
 management:
