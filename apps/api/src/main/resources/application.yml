@@ -38,6 +38,8 @@ spring:
       acks: all
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        max.block.ms: 10000
     consumer:
       group-id: coupon-issue-consumer
       auto-offset-reset: earliest

@@ -42,7 +42,7 @@ class KafkaCouponIssueEventPublisherTest @Autowired constructor(
     class TestRecorder {
         val received = ConcurrentLinkedQueue<CouponIssueRequested>()
 
-        @KafkaListener(topics = ["coupon-issue-requests"], groupId = "publisher-test-recorder")
+        @KafkaListener(topics = [KafkaCouponIssueEventPublisher.TOPIC], groupId = "publisher-test-recorder")
         fun listen(event: CouponIssueRequested) {
             received.add(event)
         }

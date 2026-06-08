@@ -17,8 +17,14 @@ class KafkaCouponIssueEventPublisher(
 ) : CouponIssueEventPublisher {
 
     override fun publish(event: CouponIssueRequested) {
-        kafkaTemplate.send(TOPIC, event.couponId.toString(), event)
-            .get(SEND_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+        try {
+            kafkaTemplate.send(TOPIC, event.couponId.toString(), event)
+                .get(SEND_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+        } catch (e: InterruptedException) {
+            // 동기 대기 중 인터럽트 시 플래그 복원 후 전파(나머지 예외는 조율자가 잡아 보상).
+            Thread.currentThread().interrupt()
+            throw e
+        }
     }
 
     companion object {
