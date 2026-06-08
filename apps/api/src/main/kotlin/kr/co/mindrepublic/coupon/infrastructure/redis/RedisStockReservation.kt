@@ -1,5 +1,6 @@
 package kr.co.mindrepublic.coupon.infrastructure.redis
 
+import kr.co.mindrepublic.coupon.domain.coupon.ReservationResult
 import kr.co.mindrepublic.coupon.domain.coupon.StockReservation
 import org.springframework.core.io.ClassPathResource
 import org.springframework.data.redis.core.StringRedisTemplate
@@ -17,6 +18,11 @@ class RedisStockReservation(
 
     private val reserveScript = DefaultRedisScript<Long>().apply {
         setLocation(ClassPathResource("redis/reserve_stock.lua"))
+        resultType = Long::class.java
+    }
+
+    private val reserveWithDedupScript = DefaultRedisScript<Long>().apply {
+        setLocation(ClassPathResource("redis/reserve_stock_dedup.lua"))
         resultType = Long::class.java
     }
 
@@ -40,5 +46,25 @@ class RedisStockReservation(
     override fun remaining(couponId: Long): Long =
         redisTemplate.opsForValue().get(key(couponId))?.toLongOrNull() ?: 0
 
+    override fun reserveWithDedup(couponId: Long, userId: Long): ReservationResult {
+        val result = redisTemplate.execute(
+            reserveWithDedupScript,
+            listOf(key(couponId), issuedKey(couponId)),
+            userId.toString(),
+        )
+        return when (result) {
+            null, -1L -> ReservationResult.OUT_OF_STOCK   // null 은 방어적으로 통과시키지 않음
+            -2L -> ReservationResult.DUPLICATE
+            else -> ReservationResult.RESERVED
+        }
+    }
+
+    override fun releaseWithDedup(couponId: Long, userId: Long) {
+        redisTemplate.opsForValue().increment(key(couponId))          // 재고 슬롯 반납
+        redisTemplate.opsForSet().remove(issuedKey(couponId), userId.toString())  // 발급자 표시 제거
+    }
+
     private fun key(couponId: Long) = "coupon:stock:$couponId"
+
+    private fun issuedKey(couponId: Long) = "coupon:issued:$couponId"
 }

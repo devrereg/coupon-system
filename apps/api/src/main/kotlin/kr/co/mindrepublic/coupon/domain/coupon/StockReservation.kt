@@ -16,4 +16,13 @@ interface StockReservation {
 
     /** 현재 잔여 수량. 미초기화면 0. (동시성 테스트 불변식 검증용) */
     fun remaining(couponId: Long): Long
+
+    /**
+     * Day 7 — 1인 1매 선차단 게이트. 재고검사+중복검사(발급자 집합)+차감을 원자 실행한다.
+     * RESERVED(차감 성공) / OUT_OF_STOCK(잔여 없음, 차감 안 함) / DUPLICATE(이미 발급, 차감 안 함).
+     */
+    fun reserveWithDedup(couponId: Long, userId: Long): ReservationResult
+
+    /** reserveWithDedup 으로 깎은 슬롯을 되돌린다 — 재고 INCR + 발급자 집합에서 SREM. 선행 reserveWithDedup 성공과 짝일 때만 호출. */
+    fun releaseWithDedup(couponId: Long, userId: Long)
 }
