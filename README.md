@@ -10,14 +10,14 @@ coupon-system/
 ├── apps/
 │   ├── api/          # 백엔드 — Spring Boot 3.5 + Kotlin, 레이어드 아키텍처
 │   └── web/          # 프론트 — Vite + React + TS, atomic design
-├── docker-compose.yml  # 공용 인프라 (PostgreSQL + Redis)
+├── docker-compose.yml  # 공용 인프라 (PostgreSQL + Redis + Kafka)
 └── .sdkmanrc           # JDK/Gradle 툴체인 (레포 전체)
 ```
 
 ## 공용 인프라 (레포 루트에서 실행)
 
 ```bash
-docker compose up -d        # PostgreSQL(호스트 15432) + Redis(6379)
+docker compose up -d        # PostgreSQL(호스트 15432) + Redis(6379) + Kafka(9092, KRaft 단일 브로커)
 docker compose ps           # healthy 확인
 docker compose down         # 종료 (데이터 유지)
 ```
